@@ -1,0 +1,15 @@
+# Playback source
+
+uint8 SOURCE_TOPIC      = 0
+uint8 SOURCE_LOCAL_FILE = 1
+
+uint8 source
+string path
+int32 start_ms
+int32 end_ms
+---
+bool played
+---
+uint8 source
+string path
+float32 playback_position
