@@ -88,12 +88,13 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-	${catkin_INCLUDE_DIRS}
+    ${catkin_INCLUDE_DIRS}
+    includes
 )
 
 set(DRIVE_NODE_HEADERS
-	src/createoi.h
-        src/driver.h
+        includes/createoi.h
+        includes/driver.h
 )
 
 add_executable(drive_node
