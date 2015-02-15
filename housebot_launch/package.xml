@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package>
+  <name>housebot_launch</name>
+  <version>0.0.0</version>
+  <description>The housebot_launch package</description>
+
+  <maintainer email="Meekins@todo.todo">Alan Meekins</maintainer>
+  <license>BSD</license>
+  <author >Alan Meekins</author>
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>roslaunch</build_depend>
+  <run_depend>roslaunch</run_depend>
+</package>
