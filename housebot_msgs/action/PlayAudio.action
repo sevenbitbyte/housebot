@@ -1,15 +1,17 @@
-# Playback source
-
+# Playback source types
 uint8 SOURCE_TOPIC      = 0
 uint8 SOURCE_LOCAL_FILE = 1
 
-uint8 source
-string path
-int32 start_ms
-int32 end_ms
+# Request
+uint8 source    # Type of playback source (ros topic, local_file)
+string path     # Path to topic or local file
+int32 start_ms  # Playback start offset of local file
+int32 end_ms    # Playback end offset of local file
 ---
-bool played
+# Result
+bool played     # Playback status status
 ---
-uint8 source
-string path
-float32 playback_position
+# Status
+uint8 source    # Type of playback source (ros topic, local_file)
+string path     # Path to playback source
+float32 playback_position # Current playback time
