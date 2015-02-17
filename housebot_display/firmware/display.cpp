@@ -165,8 +165,8 @@ void loop() {
 			matrix.drawFastHLine(16-i, 15, i, matrix.ColorHSV(0, 0, 80, true));
     }
     else{
-      float i = (((millis()%5000) - 2500) / 2500) * M_PI;
-			int x = sin(i) * 255.0;
+      float i = (((float)(millis()%3500)) / 3500) * M_PI;
+			int x = (sin(i) * 127.0) + 127.0;
       matrix.drawPixel(31,15, matrix.Color888(x,x,x,true));
     }
 
