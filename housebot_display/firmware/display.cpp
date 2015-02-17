@@ -156,7 +156,8 @@ void loop() {
 	    float i = (((float)(millis()%2500)) / 2500) * M_PI;
 			int x = (sin(i) * 127.0) + 127.0;
 			int b = (sin(i) * 70.0) + 184.0;
-			matrix.fillRect(16,8, 2, 2, matrix.Color888(x,x,b,true));
+			matrix.fillRect(7,7, 2, 2, matrix.Color888(x,x,b,true));
+			matrix.fillRect(15,7, 2, 2, matrix.Color888(x,x,b,true));
     }
     else{
       float i = (((float)(millis()%3500)) / 3500) * M_PI;
