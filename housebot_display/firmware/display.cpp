@@ -28,78 +28,86 @@ ros::Time currentDrawStart;
 housebot_msgs::drawRequest currentDrawCmd;
 
 
-bool doDrawCommand(ros::Time t, housebot_msgs::DrawCommand& layer){
-//  ros::Time layerStart = ros::Time(t.sec, t.nsec) += layer.delay;
-//  ros::Time layerEnd = (ros::Time(t.sec, t.nsec) += layer.delay) += layer.duration;
+bool doDrawCommand(ros::Time now, housebot_msgs::DrawCommand* layer){
+  ros::Time layerStart = ros::Time(currentDrawStart.sec, currentDrawStart.nsec) += layer->delay;
+  ros::Time layerEnd = (ros::Time(currentDrawStart.sec, currentDrawStart.nsec) += layer->delay) += layer->duration;
+
+	double nowSec = now.toSec();
+	double startSec = layerStart.toSec();
+	double endSec = layerEnd.toSec();
+
+	if(nowSec > startSec && nowSec < endSec){
+    return false;
+  }
 
   // Load color info
   uint16_t color = 0;
-  if(layer.color_space == housebot_msgs::DrawCommand::COLOR_888 && layer.color_length == 3){
-    color = matrix.Color888(layer.color[0], layer.color[1], layer.color[2], true);
+  if(layer->color_space == housebot_msgs::DrawCommand::COLOR_888 && layer->color_length == 3){
+    color = matrix.Color888(layer->color[0], layer->color[1], layer->color[2], true);
   }
-  else if(layer.color_space == housebot_msgs::DrawCommand::COLOR_HSV && layer.color_length == 3){
-    color = matrix.ColorHSV(layer.color[0], layer.color[1], layer.color[2], true);
+  else if(layer->color_space == housebot_msgs::DrawCommand::COLOR_HSV && layer->color_length == 3){
+    color = matrix.ColorHSV(layer->color[0], layer->color[1], layer->color[2], true);
   }
   else{
-    color = matrix.Color888(layer.color[0], layer.color[1], layer.color[2], true);
+    color = matrix.Color888(layer->color[0], layer->color[1], layer->color[2], true);
   }
   
   // Parse shape parameters
-  if(layer.shape == housebot_msgs::DrawCommand::SHAPE_SCREEN){
+  if(layer->shape == housebot_msgs::DrawCommand::SHAPE_SCREEN){
     matrix.fillScreen(color);
   }
-  else if(layer.shape == housebot_msgs::DrawCommand::SHAPE_PIXEL && layer.shape_data_length == 2){
-    matrix.drawPixel(layer.shape_data[0], layer.shape_data[1], color);
+  else if(layer->shape == housebot_msgs::DrawCommand::SHAPE_PIXEL && layer->shape_data_length == 2){
+    matrix.drawPixel(layer->shape_data[0], layer->shape_data[1], color);
   }
-  else if(layer.shape == housebot_msgs::DrawCommand::SHAPE_LINE && layer.shape_data_length == 4){
-    matrix.drawLine(layer.shape_data[0], layer.shape_data[1],
-                    layer.shape_data[2], layer.shape_data[3], color);
+  else if(layer->shape == housebot_msgs::DrawCommand::SHAPE_LINE && layer->shape_data_length == 4){
+    matrix.drawLine(layer->shape_data[0], layer->shape_data[1],
+                    layer->shape_data[2], layer->shape_data[3], color);
   }
-  else if(layer.shape == housebot_msgs::DrawCommand::SHAPE_V_LINE && layer.shape_data_length == 3){
-    matrix.drawFastVLine(layer.shape_data[0], layer.shape_data[1],
-                    layer.shape_data[2], color);
+  else if(layer->shape == housebot_msgs::DrawCommand::SHAPE_V_LINE && layer->shape_data_length == 3){
+    matrix.drawFastVLine(layer->shape_data[0], layer->shape_data[1],
+                    layer->shape_data[2], color);
   }
-  else if(layer.shape == housebot_msgs::DrawCommand::SHAPE_H_LINE && layer.shape_data_length == 3){
-    matrix.drawFastHLine(layer.shape_data[0], layer.shape_data[1],
-                    layer.shape_data[2], color);
+  else if(layer->shape == housebot_msgs::DrawCommand::SHAPE_H_LINE && layer->shape_data_length == 3){
+    matrix.drawFastHLine(layer->shape_data[0], layer->shape_data[1],
+                    layer->shape_data[2], color);
   }
-  else if(layer.shape == housebot_msgs::DrawCommand::SHAPE_RECT && layer.shape_data_length == 4){
-    if(layer.fill){
-      matrix.fillRect(layer.shape_data[0], layer.shape_data[1],
-                    layer.shape_data[2], layer.shape_data[3], color);
+  else if(layer->shape == housebot_msgs::DrawCommand::SHAPE_RECT && layer->shape_data_length == 4){
+    if(layer->fill){
+      matrix.fillRect(layer->shape_data[0], layer->shape_data[1],
+                    layer->shape_data[2], layer->shape_data[3], color);
     }
     else{
-      matrix.drawRect(layer.shape_data[0], layer.shape_data[1],
-                    layer.shape_data[2], layer.shape_data[3], color);
+      matrix.drawRect(layer->shape_data[0], layer->shape_data[1],
+                    layer->shape_data[2], layer->shape_data[3], color);
     }
   }
-  else if(layer.shape == housebot_msgs::DrawCommand::SHAPE_CIRCLE && layer.shape_data_length == 3){
-    if(layer.fill){
-      matrix.fillCircle(layer.shape_data[0], layer.shape_data[1],
-                    layer.shape_data[2], color);
+  else if(layer->shape == housebot_msgs::DrawCommand::SHAPE_CIRCLE && layer->shape_data_length == 3){
+    if(layer->fill){
+      matrix.fillCircle(layer->shape_data[0], layer->shape_data[1],
+                    layer->shape_data[2], color);
     }
     else{
-      matrix.drawCircle(layer.shape_data[0], layer.shape_data[1],
-                    layer.shape_data[2], color);
+      matrix.drawCircle(layer->shape_data[0], layer->shape_data[1],
+                    layer->shape_data[2], color);
     }
   }
-  else if(layer.shape == housebot_msgs::DrawCommand::SHAPE_TRIANGLE && layer.shape_data_length == 3){
-    if(layer.fill){
-      matrix.fillTriangle(layer.shape_data[0], layer.shape_data[1],
-                          layer.shape_data[2], layer.shape_data[3],
-                          layer.shape_data[4], layer.shape_data[5], color);
+  else if(layer->shape == housebot_msgs::DrawCommand::SHAPE_TRIANGLE && layer->shape_data_length == 3){
+    if(layer->fill){
+      matrix.fillTriangle(layer->shape_data[0], layer->shape_data[1],
+                          layer->shape_data[2], layer->shape_data[3],
+                          layer->shape_data[4], layer->shape_data[5], color);
     }
     else{
-      matrix.drawTriangle(layer.shape_data[0], layer.shape_data[1],
-                          layer.shape_data[2], layer.shape_data[3],
-                          layer.shape_data[4], layer.shape_data[5], color);
+      matrix.drawTriangle(layer->shape_data[0], layer->shape_data[1],
+                          layer->shape_data[2], layer->shape_data[3],
+                          layer->shape_data[4], layer->shape_data[5], color);
     }
   }
   else{
     matrix.fillScreen(color);
   }
 
-  if(layer.swap_buffers){
+  if(layer->swap_buffers){
     matrix.swapBuffers(false);
     //isIdle=true;
   }
@@ -113,10 +121,10 @@ void drawCb(const housebot_msgs::drawRequest& req, housebot_msgs::drawResponse& 
   currentDrawCmd.deserialize(drawCmdTemp);
   currentDrawStart = nh.now();
   
-  bool activeLayer = false;
+  /*bool activeLayer = false;
   for(int i=0; i<currentDrawCmd.layers_length; i++){
     activeLayer |= doDrawCommand(currentDrawStart, currentDrawCmd.layers[i]);
-  }
+  }*/
   
   res.success = true;
   isIdle=false;
@@ -177,11 +185,18 @@ void loop() {
     ros::Time t = nh.now();
     bool activeLayer = false;
     for(int i=0; i<currentDrawCmd.layers_length; i++){
-      activeLayer |= doDrawCommand(t, currentDrawCmd.layers[i]);
+      activeLayer |= doDrawCommand(t, &currentDrawCmd.layers[i]);
     }
     
     if(!activeLayer){
-      isIdle = true;
+
+      if(currentDrawCmd.loop){
+				currentDrawStart = nh.now();
+      }
+      else{
+        isIdle = true;
+      }
+
     }
   }
 }
