@@ -104,11 +104,11 @@ bool doDrawCommand(housebot_msgs::DrawCommand* layer){
     }
   }
   else{
-    matrix.fillScreen(0);
+    //matrix.fillScreen(0);
   }
 
   if(layer->swap_buffers){
-    matrix.swapBuffers(false);
+    matrix.swapBuffers(true);
     //isIdle=true;
   }
 
