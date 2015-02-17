@@ -22,14 +22,14 @@ RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, true);
 
 bool isIdle=true;
 
-ros::NodeHandle_<ArduinoHardware, 2, 2, 768, 32>  nh;
-unsigned char drawCmdTemp[768];
-ros::Time currentDrawStart;
-housebot_msgs::drawRequest currentDrawCmd;
+ros::NodeHandle_<ArduinoHardware, 2, 2, 512, 32>  nh;
+//unsigned char drawCmdTemp[512];
+//ros::Time currentDrawStart;
+//housebot_msgs::drawRequest currentDrawCmd;
 
 
-bool doDrawCommand(ros::Time now, housebot_msgs::DrawCommand* layer){
-  ros::Time layerStart = ros::Time(currentDrawStart.sec, currentDrawStart.nsec) += layer->delay;
+bool doDrawCommand(housebot_msgs::DrawCommand* layer){
+  /*ros::Time layerStart = ros::Time(currentDrawStart.sec, currentDrawStart.nsec) += layer->delay;
   ros::Time layerEnd = (ros::Time(currentDrawStart.sec, currentDrawStart.nsec) += layer->delay) += layer->duration;
 
 	double nowSec = now.toSec();
@@ -38,7 +38,7 @@ bool doDrawCommand(ros::Time now, housebot_msgs::DrawCommand* layer){
 
 	if(nowSec > startSec && nowSec < endSec){
     return false;
-  }
+  }*/
 
   // Load color info
   uint16_t color = 0;
@@ -104,7 +104,7 @@ bool doDrawCommand(ros::Time now, housebot_msgs::DrawCommand* layer){
     }
   }
   else{
-    matrix.fillScreen(color);
+    matrix.fillScreen(0);
   }
 
   if(layer->swap_buffers){
@@ -117,14 +117,14 @@ bool doDrawCommand(ros::Time now, housebot_msgs::DrawCommand* layer){
 
 
 void drawCb(const housebot_msgs::drawRequest& req, housebot_msgs::drawResponse& res){
-  req.serialize(drawCmdTemp);
-  currentDrawCmd.deserialize(drawCmdTemp);
-  currentDrawStart = nh.now();
+  //req.serialize(drawCmdTemp);
+  //currentDrawCmd.deserialize(drawCmdTemp);
+  //currentDrawStart = nh.now();
   
-  /*bool activeLayer = false;
-  for(int i=0; i<currentDrawCmd.layers_length; i++){
-    activeLayer |= doDrawCommand(currentDrawStart, currentDrawCmd.layers[i]);
-  }*/
+  bool activeLayer = false;
+  for(int i=0; i<req.layers_length; i++){
+    doDrawCommand(&req.layers[i]);
+  }
   
   res.success = true;
   isIdle=false;
@@ -148,29 +148,15 @@ void setup() {
 void loop() {
   nh.spinOnce();
   
-  if(isIdle){
-    ros::Time t = nh.now();
-    int h = hour(t.sec - (7 * 3600));
-    int m = minute(t.sec - (7 * 3600));
-    int s = second(t.sec - (7 * 3600));
-    
+  if(isIdle){   
     matrix.fillScreen(0); 
     
 
     if(nh.connected()){
-	    int i=0;
-      matrix.setTextColor(matrix.Color888(255, 255, 255, true));
-      matrix.setCursor(1, 4);
-      if(h < 10){ matrix.print(String(0, DEC)); }
-      matrix.print(String(String(h, DEC)+":"));
-      if(m < 10){ matrix.print(String(0, DEC)); }
-      matrix.print(String(m, DEC));
-      i = map(s, 0, 60, 0, 16);
-			
-			matrix.drawFastHLine(16, 0, i, matrix.ColorHSV(0, 0, 80, true));
-			matrix.drawFastHLine(16-i, 0, i, matrix.ColorHSV(0, 0, 80, true));
-			matrix.drawFastHLine(16, 15, i, matrix.ColorHSV(0, 0, 80, true));
-			matrix.drawFastHLine(16-i, 15, i, matrix.ColorHSV(0, 0, 80, true));
+	    float i = (((float)(millis()%2500)) / 2500) * M_PI;
+			int x = (sin(i) * 127.0) + 127.0;
+			int b = (sin(i) * 100.0) + 154.0;
+			matrix.fillRect(30,14, 2, 2, matrix.Color888(x,x,b,true));
     }
     else{
       float i = (((float)(millis()%3500)) / 3500) * M_PI;
@@ -182,7 +168,7 @@ void loop() {
     matrix.swapBuffers(false);
   }
   else{
-    ros::Time t = nh.now();
+    /*ros::Time t = nh.now();
     bool activeLayer = false;
     for(int i=0; i<currentDrawCmd.layers_length; i++){
       activeLayer |= doDrawCommand(t, &currentDrawCmd.layers[i]);
@@ -197,6 +183,6 @@ void loop() {
         isIdle = true;
       }
 
-    }
+    }*/
   }
 }
