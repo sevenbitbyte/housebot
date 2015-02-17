@@ -22,8 +22,8 @@ RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, true);
 
 bool isIdle=true;
 
-ros::NodeHandle_<ArduinoHardware, 2, 2, 1024, 32>  nh;
-unsigned char drawCmdTemp[1024];
+ros::NodeHandle_<ArduinoHardware, 2, 2, 768, 32>  nh;
+unsigned char drawCmdTemp[768];
 ros::Time currentDrawStart;
 housebot_msgs::drawRequest currentDrawCmd;
 
