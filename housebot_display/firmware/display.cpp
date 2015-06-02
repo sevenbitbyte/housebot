@@ -140,10 +140,10 @@ int rightEyeX = 23;
 int rightEyeY = 7;
 
 void messageCb( const std_msgs::Int8MultiArray& positions){
-  leftEyeX = positions.data[0]
-  leftEyeY = positions.data[1]
-  rightEyeX = positions.data[2]
-  rightEyeY = positions.data[3]
+  leftEyeX = positions.data[0];
+  leftEyeY = positions.data[1];
+  rightEyeX = positions.data[2];
+  rightEyeY = positions.data[3];
 }
 
 ros::Subscriber<std_msgs::Int8MultiArray> eyeSub("~/head/eye_positions", &messageCb );
