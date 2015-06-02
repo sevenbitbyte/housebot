@@ -3,7 +3,7 @@
 PATH=$(dirname $(readlink -f $0))
 PKGDIR=${PATH%/*}
 
-. ~/.bashrc
+source ~/.bashrc
 
 
 echo $PKGDIR
