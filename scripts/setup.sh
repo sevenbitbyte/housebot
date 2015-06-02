@@ -3,8 +3,8 @@
 FILEPATH=$(dirname $(readlink -f $0))
 PKGDIR=${FILEPATH%/*}
 
-source /home/vega/.bashrc
-
+source /opt/ros/indigo/setup.bash
+source ~/Tools/ros/indigo/devel/setup.bash
 
 echo $PKGDIR
 roscd
