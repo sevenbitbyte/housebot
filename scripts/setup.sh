@@ -10,5 +10,10 @@ echo $PKGDIR
 roscd
 cd ..
 
+sudo service housebot stop
+
 catkin_make housebot_display_firmware
 catkin_make housebot_display_firmware_display-upload
+
+sudo service housebot start
+
