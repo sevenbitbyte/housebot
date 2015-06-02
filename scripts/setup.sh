@@ -1,7 +1,8 @@
 #!/bin/bash
 
 PATH=$(dirname $(readlink -f $0))
-PKGDIR=$(basename $PATH)
+PKGDIR=${PATH}
+#echo ${PWD##*/}
 
 echo $PATH
 echo $PKGDIR
