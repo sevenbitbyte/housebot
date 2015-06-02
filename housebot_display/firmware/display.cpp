@@ -1,6 +1,7 @@
 #include <ros.h>
 #include <ros/time.h>
 #include <std_msgs/Empty.h>
+#include <std_msgs/Int8MultiArray.h>
 #include <housebot_msgs/draw.h>
 
 #include <math.h>
@@ -51,7 +52,7 @@ bool doDrawCommand(housebot_msgs::DrawCommand* layer){
   else{
     color = matrix.Color888(layer->color[0], layer->color[1], layer->color[2], true);
   }
-  
+
   // Parse shape parameters
   if(layer->shape == housebot_msgs::DrawCommand::SHAPE_SCREEN){
     matrix.fillScreen(color);
@@ -120,44 +121,58 @@ void drawCb(const housebot_msgs::drawRequest& req, housebot_msgs::drawResponse& 
   //req.serialize(drawCmdTemp);
   //currentDrawCmd.deserialize(drawCmdTemp);
   //currentDrawStart = nh.now();
-  
+
   bool activeLayer = false;
   for(int i=0; i<req.layers_length; i++){
     doDrawCommand(&req.layers[i]);
   }
-  
+
   res.success = true;
   isIdle=false;
 }
 
 
-ros::ServiceServer<housebot_msgs::drawRequest, housebot_msgs::drawResponse> drawSrv("~/head/draw", drawCb);
+//ros::ServiceServer<housebot_msgs::drawRequest, housebot_msgs::drawResponse> drawSrv("~/head/draw", drawCb);
+
+int leftEyeX = 8;
+int leftEyeY = 7;
+int rightEyeX = 23;
+int rightEyeY = 7;
+
+void messageCb( const std_msgs::Int8MultiArray& positions){
+  leftEyeX = positions.data[0]
+  leftEyeY = positions.data[1]
+  rightEyeX = positions.data[2]
+  rightEyeY = positions.data[3]
+}
+
+ros::Subscriber<std_msgs::Int8MultiArray> eyeSub("~/head/eye_positions", &messageCb );
 
 void setup() {
   matrix.begin();
   matrix.setTextWrap(false); // Allow text to run off right edge
   matrix.setTextSize(1);
-  matrix.fillScreen(0);  
+  matrix.fillScreen(0);
   matrix.swapBuffers(false);
 
   nh.getHardware()->setBaud(115200);
   nh.initNode();
-  nh.advertiseService(drawSrv);
+  nh.subscribe(eyeSub);
 }
 
 void loop() {
   nh.spinOnce();
-  
-  if(isIdle){   
-    matrix.fillScreen(0); 
-    
+
+  if(isIdle){
+    matrix.fillScreen(0);
+
 
     if(nh.connected()){
 	    float i = (((float)(millis()%2500)) / 2500) * M_PI;
 			int x = (sin(i) * 127.0) + 127.0;
 			int b = (sin(i) * 70.0) + 184.0;
-			matrix.fillRect(7,7, 2, 2, matrix.Color888(x,x,b,true));
-			matrix.fillRect(23,7, 2, 2, matrix.Color888(x,x,b,true));
+			matrix.fillRect(leftEyeX,leftEyeY, 2, 2, matrix.Color888(x,x,b,true));
+			matrix.fillRect(rightEyeX,rightEyeY, 2, 2, matrix.Color888(x,x,b,true));
     }
     else{
       float i = (((float)(millis()%3500)) / 3500) * M_PI;
@@ -165,7 +180,7 @@ void loop() {
       matrix.drawPixel(31,15, matrix.Color888(x,x,x,true));
     }
 
-  
+
     matrix.swapBuffers(false);
   }
   else{
@@ -174,7 +189,7 @@ void loop() {
     for(int i=0; i<currentDrawCmd.layers_length; i++){
       activeLayer |= doDrawCommand(t, &currentDrawCmd.layers[i]);
     }
-    
+
     if(!activeLayer){
 
       if(currentDrawCmd.loop){
