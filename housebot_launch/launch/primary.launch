@@ -28,7 +28,7 @@
     <arg name="depth_registration" value="true"/>
   </include>
 
-  <node name="rosapi" pkg="rosapi" type="rosapi" />
+  <node name="rosapi" pkg="rosapi" type="rosapi_node" />
   <node name="tf2_republisher" pkg="tf2_web_republisher" type="tf2_web_republisher"/> 
   <node name="image_streamer" pkg="web_video_server" type="web_video_server">
     <param name="ros_threads" value="4"/>
@@ -44,10 +44,6 @@
 
 
   <node name="point_downsample" pkg="point_downsample" type="point_downsample_node"/>
-  <node name="turtlebot" pkg="create_node" type="turtlebot_node.py">
-    <param name="port" value="/dev/ttyACM.teensy" />
-    <param name="baud" value="57600" />
-  </node>
   <node name="head" pkg="rosserial_python" type="serial_node.py">
     <param name="port" value="/dev/ttyACM.mega" />
     <param name="baud" value="115200" />
