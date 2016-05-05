@@ -1,0 +1,102 @@
+<launch>
+  <arg name="port" default="4000" />
+  <arg name="address" default="" />
+  <arg name="ssl" default="false" />
+  <arg name="certfile" />
+  <arg name="keyfile" />
+  <arg name="authenticate" default="false" />
+  <param name="enable_statistics" type="bool" value="true"/>
+
+  <group if="$(arg ssl)">
+    <node name="rosbridge_websocket" pkg="rosbridge_server" type="rosbridge_websocket" output="screen">
+      <param name="certfile" value="$(arg certfile)" />
+      <param name="keyfile" value="$(arg keyfile)" />
+      <param name="authenticate" value="$(arg authenticate)" />
+      <param name="port" value="$(arg port)"/>
+      <param name="address" value="$(arg address)"/>
+    </node>
+  </group>
+  <group unless="$(arg ssl)">
+    <node name="rosbridge_websocket" pkg="rosbridge_server" type="rosbridge_websocket" output="screen">
+      <param name="authenticate" value="$(arg authenticate)" />
+      <param name="port" value="$(arg port)"/>
+      <param name="address" value="$(arg address)"/>
+    </node>
+  </group>
+
+
+    <include file="$(find openni2_launch)/launch/openni2.launch">
+      <arg name="depth_registration" value="true"/>
+    </include>
+
+    <node name="depthcloud_encoder" pkg="depthcloud_encoder" type="depthcloud_encoder_node">
+      <param name="depth" value="/camera/depth/image"/>
+      <param name="rgb" value="/camera/rgb/image_raw"/>
+    </node>
+
+
+  <node name="point_downsample" pkg="point_downsample" type="point_downsample_node"/>
+
+
+  <node name="rosapi" pkg="rosapi" type="rosapi_node" />
+
+  <node name="tf2_republisher" pkg="tf2_web_republisher" type="tf2_web_republisher"/>
+  <node name="image_streamer" pkg="web_video_server" type="web_video_server">
+    <param name="ros_threads" value="2"/>
+    <param name="server_threads" value="2"/>
+    <!-- <param name="port" value="8000"/> -->
+    <!--<param name="quality" value="55"/>-->
+  </node>
+
+  <node name="ACM0" pkg="rosserial_python" type="serial_node.py">
+    <param name="port" value="/dev/ttyACM0" />
+    <remap from="/cmd_vel" to="/mobile_base/commands/velocity"/>
+  </node>
+
+  <node name="ACM1" pkg="rosserial_python" type="serial_node.py">
+    <param name="port" value="/dev/ttyACM1" />
+    <remap from="/cmd_vel" to="/mobile_base/commands/velocity"/>
+  </node>
+
+    <node name="dynamixel_manager" pkg="dynamixel_controllers" type="controller_manager.py" required="false" output="screen">
+        <rosparam>
+            namespace: dxl_manager
+            serial_ports:
+                dxl_USB0:
+                    port_name: "/dev/sensors/ftdi_AI0283Z3"
+                    baud_rate: 1000000
+                    min_motor_id: 0
+                    max_motor_id: 3
+                    update_rate: 30
+        </rosparam>
+    </node>
+
+    <!-- Start tilt joint controller -->
+    <rosparam file="$(find housebot_launch)/config/vega4_scara_joints.yaml" command="load"/>
+    <node name="scara_controller_spawner" pkg="dynamixel_controllers" type="controller_spawner.py"
+          args="--manager=dxl_manager
+                --port dxl_USB0
+                vega4_gantry_controller
+		vega4_head_controller
+                vega4_scara_shoulder_controller
+                vega4_scara_elbow_controller"
+          output="screen"/>
+
+
+    <arg name="kobuki_publish_tf" default="true"/>
+
+    <node pkg="nodelet" type="nodelet" name="mobile_base_nodelet_manager" args="manager"/>
+    <node pkg="nodelet" type="nodelet" name="mobile_base" args="load kobuki_node/KobukiNodelet mobile_base_nodelet_manager">
+      <rosparam file="$(find housebot_launch)/config/vega4_base.yaml" command="load"/>
+      <param name="publish_tf" value="$(arg kobuki_publish_tf)"/>
+      <remap from="mobile_base/odom" to="odom"/>
+      <remap from="mobile_base/joint_states" to="joint_states"/>
+    </node>
+
+    <node pkg="diagnostic_aggregator" type="aggregator_node" name="diagnostic_aggregator" >
+      <rosparam command="load" file="$(find kobuki_node)/param/diagnostics.yaml" />
+    </node>
+
+
+
+</launch>
