@@ -1,0 +1,48 @@
+vega4_head_controller:
+    controller:
+        package: dynamixel_controllers
+        module: joint_position_controller
+        type: JointPositionController
+    joint_name: head_joint
+    joint_speed: 0.75
+    motor:
+        id: 1
+        init: 200
+        min: 115
+        max: 630
+vega4_scara_shoulder_controller:
+    controller:
+        package: dynamixel_controllers
+        module: joint_position_controller
+        type: JointPositionController
+    joint_name: scara_shoulder_joint
+    joint_speed: 0.5
+    motor:
+        id: 2
+        init: 513
+        min: 265
+        max: 730
+vega4_scara_elbow_controller:
+    controller:
+        package: dynamixel_controllers
+        module: joint_position_controller
+        type: JointPositionController
+    joint_name: scara_elbow_joint
+    joint_speed: 0.5
+    motor:
+        id: 3
+        init: 513
+        min: 230
+        max: 800
+vega4_gantry_controller:
+    controller:
+        package: dynamixel_controllers
+        module: joint_torque_controller
+        type: JointTorqueController
+    joint_name: gantry_joint
+    joint_speed: 5
+    motor:
+        id: 0
+        init: 0
+        min: 0
+        max: 4095
