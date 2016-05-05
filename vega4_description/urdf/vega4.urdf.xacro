@@ -103,11 +103,11 @@
 
     <joint name="head_camera_joint" type="fixed">
       <parent link="head_link"/>
-      <child link="head_camera_link"/>
+      <child link="camera_link"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
     </joint>
-    <link name="head_camera_link">
+    <link name="camera_link">
       <visual>
         <geometry>
           <box size="0.1 0.05 0.05"/>
