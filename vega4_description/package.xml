@@ -1,0 +1,18 @@
+<package>
+  <name>vega4_description</name>
+  <version>0.1.0</version>
+  <description>
+      Description of the vega4 model.
+  </description>
+  <author email="alan@clnb.io">Alan Meekins</author>
+  <maintainer email="alan@clnb.io">Alan Meekins</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>urdf</build_depend>
+  <build_depend>xacro</build_depend>
+
+  <run_depend>urdf</run_depend>
+  <run_depend>xacro</run_depend>
+</package>

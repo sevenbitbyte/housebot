@@ -1,0 +1,73 @@
+<?xml version="1.0" ?>
+
+<robot name="vega4" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find kobuki_description)/urdf/kobuki.urdf.xacro" />
+
+  <xacro:macro name="vega4">
+
+    <kobuki/>
+
+    <joint name="gantry_lower_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="gantry_lower_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+    <link name="gantry_lower_link">
+      <visual>
+        <geometry>
+          <box size="0.1 0.1 0.6"/>
+        </geometry>
+        <origin xyz="0 0 0.3" rpy="0 0 0"/>
+      </visual>
+    </link>
+
+    <joint name="gantry_sliding_joint" type="prismatic">
+      <parent link="gantry_lower_link"/>
+      <child link="gantry_upper_link"/>
+      <origin xyz="0 0 0.25" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="0.0" upper="0.5" effort="2" velocity="0.3"/>
+    </joint>
+    <link name="gantry_upper_link">
+    <visual>
+      <geometry>
+        <cylinder radius="0.05" length="0.5"/>
+      </geometry>
+      <origin xyz="0 0 0.1" rpy="0 0 0"/>
+    </visual>
+    </link>
+
+    <joint name="head_joint" type="revolute">
+      <parent link="gantry_upper_link"/>
+      <child link="head_link"/>
+      <origin xyz="0 0 0.5" rpy="0 0 0"/>
+      <axis xyz="0 -1 0"/>
+      <limit lower="${-M_PI/6}" upper="${M_PI}" effort="2" velocity="0.3"/>
+    </joint>
+    <link name="head_link">
+      <visual>
+        <geometry>
+          <box size="0.05 0.3 0.1"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </visual>
+    </link>
+
+    <joint name="head_camera_joint" type="fixed">
+      <parent link="head_link"/>
+      <child link="head_camera_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+    <link name="head_camera_link">
+      <visual>
+        <geometry>
+          <box size="0.1 0.05 0.05"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </visual>
+    </link>
+
+  </xacro:macro>
+</robot>
