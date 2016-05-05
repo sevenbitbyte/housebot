@@ -38,6 +38,53 @@
     </visual>
     </link>
 
+    <joint name="jammer_gantry_joint" type="fixed">
+      <parent link="gantry_upper_link"/>
+      <child link="jammer_link"/>
+      <origin xyz="0.05 0 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+    <link name="jammer_link">
+      <visual>
+        <geometry>
+          <box size="0.03 0.01 0.01"/>
+        </geometry>
+        <origin xyz="0.015 0 0" rpy="0 0 0"/>
+      </visual>
+    </link>
+
+    <joint name="jammer_shoulder_joint" type="revolute">
+      <parent link="jammer_link"/>
+      <child link="jammer_shoulder_link"/>
+      <origin xyz="0.05 0 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="${-((M_PI/2)+M_PI/6)}" upper="${(M_PI/2)+M_PI/6}" effort="2" velocity="0.3"/>
+    </joint>
+    <link name="jammer_shoulder_link">
+      <visual>
+        <geometry>
+          <box size="0.03 0.01 0.01"/>
+        </geometry>
+        <origin xyz="0.015 0 0" rpy="0 0 0"/>
+      </visual>
+    </link>
+
+    <joint name="jammer_elbow_joint" type="revolute">
+      <parent link="jammer_shoulder_link"/>
+      <child link="jammer_elbow_link"/>
+      <origin xyz="0.05 0 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="${-((M_PI/2)+M_PI/6)}" upper="${(M_PI/2)+M_PI/6}" effort="2" velocity="0.3"/>
+    </joint>
+    <link name="jammer_elbow_link">
+      <visual>
+        <geometry>
+          <box size="0.03 0.01 0.01"/>
+        </geometry>
+        <origin xyz="0.015 0 0" rpy="0 0 0"/>
+      </visual>
+    </link>
+
     <joint name="head_joint" type="revolute">
       <parent link="gantry_upper_link"/>
       <child link="head_link"/>
