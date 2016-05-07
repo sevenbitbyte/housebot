@@ -10,7 +10,8 @@ https://github.com/yujinrobot/kobuki_core.git
 https://github.com/yujinrobot/kobuki_core.git
 https://github.com/yujinrobot/kobuki_msgs.git
 https://github.com/yujinrobot/yocs_msgs.git
-https://github.com/yujinrobot/yujin_ocs.git"
+https://github.com/yujinrobot/yujin_ocs.git
+https://github.com/mcgill-robotics/ros-teensy.git"
 
 for repoUri in $listOfPublicRepos
 do
