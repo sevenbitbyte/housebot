@@ -1,6 +1,6 @@
-# vega4_head
+# vega4_belt
 
-Head controller firmware responsible for driving the face LED matrix, ear LED rings, audio amplifier and PIR sensor.
+Belt controller firmware responsible for driving the face LED matrix, ear LED rings, audio amplifier and PIR sensor.
 
 ## Flashing
 
@@ -16,7 +16,7 @@ teensy_loader_cli -mmcu=mk20dx256 -w build/housebot_ros/vega4_belt/teensy/bin/be
 ### Subscriptions
 
  * /belt/pump [std_msgs/Byte]
- * /belt/led_rgbw [std_msgs/UInt8MultiArra]y
+ * /belt/belt_led_rgbw [std_msgs/UInt8MultiArra]y
 
 ### Publications
 

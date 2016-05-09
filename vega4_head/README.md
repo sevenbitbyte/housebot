@@ -16,11 +16,11 @@ teensy_loader_cli -mmcu=mk20dx256 -w build/housebot_ros/vega4_head/teensy/bin/he
 ### Subscriptions
 
  * /head/image [sensor_msgs/Image]
- * /head/left_ear [std_msgs/UInt8MultiArray]
- * /head/right_ear [std_msgs/UInt8MultiArray]
+ * /head/left_led_rgb [std_msgs/UInt8MultiArray]
+ * /head/right_led_rgb [std_msgs/UInt8MultiArray]
 
 ### Publications
 
- * /head/motion [std_msgs/Bool]
+ * /head/motion_detected [std_msgs/Bool]
 
 ### Parameters
