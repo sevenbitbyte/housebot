@@ -4,6 +4,14 @@ Head controller firmware responsible for driving the face LED matrix, ear LED ri
 
 ## Flashing
 
+The teensy 3.x can be flashed using [Teensy Loader CLI](https://github.com/PaulStoffregen/teensy_loader_cli)
+
+```
+roscd;
+cd ..
+catkin_make
+teensy_loader_cli -mmcu=mk20dx256 -w build/housebot_ros/vega4_belt/teensy/bin/belt.elf.hex
+```
 
 ### Subscriptions
 
