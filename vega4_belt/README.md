@@ -7,6 +7,8 @@ Head controller firmware responsible for driving the face LED matrix, ear LED ri
 
 ### Subscriptions
 
+ * /belt/pump [std_msgs/Byte]
+ * /belt/led_rgbw [std_msgs/UInt8MultiArra]y
 
 ### Publications
 

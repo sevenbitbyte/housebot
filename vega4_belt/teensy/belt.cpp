@@ -10,7 +10,8 @@ const int powerEAPin = 2;
 
 #define V_MON_COEF (16.35f / 658)
 
-ros::NodeHandle nh;
+//ros::NodeHandle nh;
+ros::NodeHandle_<ArduinoHardware, 25, 25, 2048, 2048> nh;
 
 std_msgs::Float32 voltageMsg;
 std_msgs::Float32 currentMsg;
@@ -25,6 +26,7 @@ void setup() {
   digitalWrite(powerEAPin, LOW);
 
   nh.initNode();
+  nh.getHardware()->setBaud(115200);
   nh.advertise(voltagePub);
   nh.advertise(currentPub);
 }
