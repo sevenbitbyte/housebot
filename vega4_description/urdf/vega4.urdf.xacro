@@ -10,31 +10,31 @@
     <joint name="gantry_lower_joint" type="fixed">
       <parent link="base_link"/>
       <child link="gantry_lower_link"/>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="-0.05 0 0.13" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
     </joint>
     <link name="gantry_lower_link">
       <visual>
         <geometry>
-          <box size="0.1 0.1 0.6"/>
+          <mesh scale="0.001 0.001 0.001" filename="package://vega4_description/meshes/gantry_lower_link.stl" />
         </geometry>
-        <origin xyz="0 0 0.3" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
       </visual>
     </link>
 
     <joint name="gantry_sliding_joint" type="prismatic">
       <parent link="gantry_lower_link"/>
       <child link="gantry_upper_link"/>
-      <origin xyz="0 0 0.25" rpy="0 0 0"/>
+      <origin xyz="0 0 0.01" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
       <limit lower="0.0" upper="0.5" effort="2" velocity="0.3"/>
     </joint>
     <link name="gantry_upper_link">
     <visual>
       <geometry>
-        <cylinder radius="0.05" length="0.5"/>
+        <mesh scale="0.001 0.001 0.001" filename="package://vega4_description/meshes/gantry_upper_link.stl" />
       </geometry>
-      <origin xyz="0 0 0.1" rpy="0 0 0"/>
+      <origin xyz="0 0 -0.26" rpy="${M_PI/2} 0 ${M_PI/2}"/>
     </visual>
     </link>
 
@@ -47,9 +47,9 @@
     <link name="jammer_link">
       <visual>
         <geometry>
-          <box size="0.03 0.01 0.01"/>
+          <mesh scale="0.001 0.001 0.001" filename="package://vega4_description/meshes/jammer_link.stl" />
         </geometry>
-        <origin xyz="0.015 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
       </visual>
     </link>
 
@@ -63,9 +63,9 @@
     <link name="jammer_shoulder_link">
       <visual>
         <geometry>
-          <box size="0.03 0.01 0.01"/>
+          <mesh scale="0.001 0.001 0.001" filename="package://vega4_description/meshes/jammer_shoulder_link.stl" />
         </geometry>
-        <origin xyz="0.015 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
       </visual>
     </link>
 
@@ -79,9 +79,9 @@
     <link name="jammer_elbow_link">
       <visual>
         <geometry>
-          <box size="0.03 0.01 0.01"/>
+          <mesh scale="0.001 0.001 0.001" filename="package://vega4_description/meshes/jammer_elbow_link.stl" />
         </geometry>
-        <origin xyz="0.015 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
       </visual>
     </link>
 
@@ -95,9 +95,9 @@
     <link name="head_link">
       <visual>
         <geometry>
-          <box size="0.05 0.3 0.1"/>
+          <mesh scale="0.001 0.001 0.001" filename="package://vega4_description/meshes/head_link.stl" />
         </geometry>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
       </visual>
     </link>
 
@@ -112,7 +112,7 @@
         <geometry>
           <box size="0.1 0.05 0.05"/>
         </geometry>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
       </visual>
     </link>
 
