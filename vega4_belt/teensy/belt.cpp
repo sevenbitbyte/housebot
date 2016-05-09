@@ -41,6 +41,16 @@ void loop() {
   voltageMsg.data = analogRead(vMonPin) * V_MON_COEF;
   voltagePub.publish(&voltageMsg);
 
+  if(voltageMsg.data < 12.0){
+    digitalWrite(powerEAPin, LOW);
+  }
+  else{
+    digitalWrite(powerEAPin, HIGH);
+  }
+
+  currentMsg.data = analogRead(iMonPin);
+  currentPub.publish(&currentMsg);
+
   nh.spinOnce();
 
 }
