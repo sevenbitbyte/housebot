@@ -10,7 +10,6 @@ const int powerEAPin = 2;
 
 #define V_MON_COEF (16.35f / 658)
 
-//ros::NodeHandle nh;
 ros::NodeHandle_<ArduinoHardware, 25, 25, 2048, 2048> nh;
 
 std_msgs::Float32 voltageMsg;
@@ -20,7 +19,6 @@ ros::Publisher voltagePub("voltage", &voltageMsg);
 ros::Publisher currentPub("current", &currentMsg);
 
 void setup() {
-  // initialize the digital pin as an output.
   pinMode(ledPin, OUTPUT);
   pinMode(powerEAPin, OUTPUT);
   digitalWrite(powerEAPin, LOW);
@@ -31,14 +29,12 @@ void setup() {
   nh.advertise(currentPub);
 }
 
-// the loop() methor runs over and over again,
-// as long as the board has power
 
 void loop() {
-  digitalWrite(ledPin, HIGH);   // set the LED on
-  delay(100);                  // wait for a second
-  digitalWrite(ledPin, LOW);    // set the LED off
-  delay(100);                  // wait for a second
+  digitalWrite(ledPin, HIGH);
+  delay(100);
+  digitalWrite(ledPin, LOW);
+  delay(100);
 
   voltageMsg.data = analogRead(vMonPin) * V_MON_COEF;
   voltagePub.publish(&voltageMsg);
