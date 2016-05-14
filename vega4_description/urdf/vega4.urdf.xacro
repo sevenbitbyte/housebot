@@ -19,13 +19,17 @@
           <mesh scale="0.001 0.001 0.001" filename="package://vega4_description/meshes/gantry_lower_link.stl" />
         </geometry>
         <origin xyz="0 0 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
+      <material name="Metal">
+        <!--<color rgba="0 1.0 0 1"/>-->
+        <texture filename="package://vega4_description/material/metal.jpg"/>
+      </material>
       </visual>
     </link>
 
     <joint name="gantry_sliding_joint" type="prismatic">
       <parent link="gantry_lower_link"/>
       <child link="gantry_upper_link"/>
-      <origin xyz="0 0 0.01" rpy="0 0 0"/>
+      <origin xyz="0.03 0 0.01" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
       <limit lower="0.0" upper="0.5" effort="2" velocity="0.3"/>
     </joint>
@@ -34,14 +38,18 @@
       <geometry>
         <mesh scale="0.001 0.001 0.001" filename="package://vega4_description/meshes/gantry_upper_link.stl" />
       </geometry>
-      <origin xyz="0 0 -0.26" rpy="${M_PI/2} 0 ${M_PI/2}"/>
+      <origin xyz="0 0 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
+      <material name="Wood">
+        <!--<color rgba="0 1.0 0 1"/>-->
+        <texture filename="package://vega4_description/material/wood.jpg"/>
+      </material>
     </visual>
     </link>
 
     <joint name="jammer_gantry_joint" type="fixed">
       <parent link="gantry_upper_link"/>
       <child link="jammer_link"/>
-      <origin xyz="0.05 0 0" rpy="0 0 0"/>
+      <origin xyz="0.0075 0 0.1" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
     </joint>
     <link name="jammer_link">
@@ -50,13 +58,14 @@
           <mesh scale="0.001 0.001 0.001" filename="package://vega4_description/meshes/jammer_link.stl" />
         </geometry>
         <origin xyz="0 0 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
+      <material name="Black"/>
       </visual>
     </link>
 
     <joint name="jammer_shoulder_joint" type="revolute">
       <parent link="jammer_link"/>
       <child link="jammer_shoulder_link"/>
-      <origin xyz="0.05 0 0" rpy="0 0 0"/>
+      <origin xyz="0.044 0 0" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
       <limit lower="${-((M_PI/2)+M_PI/6)}" upper="${(M_PI/2)+M_PI/6}" effort="2" velocity="0.3"/>
     </joint>
@@ -66,13 +75,16 @@
           <mesh scale="0.001 0.001 0.001" filename="package://vega4_description/meshes/jammer_shoulder_link.stl" />
         </geometry>
         <origin xyz="0 0 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
+      <material name="Grey">
+        <color rgba="0.3 0.3 0.3 1"/>
+      </material>
       </visual>
     </link>
 
     <joint name="jammer_elbow_joint" type="revolute">
       <parent link="jammer_shoulder_link"/>
       <child link="jammer_elbow_link"/>
-      <origin xyz="0.05 0 0" rpy="0 0 0"/>
+      <origin xyz="0.1075 0 0" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
       <limit lower="${-((M_PI/2)+M_PI/6)}" upper="${(M_PI/2)+M_PI/6}" effort="2" velocity="0.3"/>
     </joint>
@@ -82,38 +94,36 @@
           <mesh scale="0.001 0.001 0.001" filename="package://vega4_description/meshes/jammer_elbow_link.stl" />
         </geometry>
         <origin xyz="0 0 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
+        <material name="Metal"/>
       </visual>
     </link>
 
     <joint name="head_joint" type="revolute">
       <parent link="gantry_upper_link"/>
       <child link="head_link"/>
-      <origin xyz="0 0 0.5" rpy="0 0 0"/>
-      <axis xyz="0 -1 0"/>
-      <limit lower="${-M_PI/6}" upper="${M_PI}" effort="2" velocity="0.3"/>
+      <origin xyz="-0.025 0 0.578" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <limit lower="${M_PI/6}" upper="${-M_PI}" effort="2" velocity="0.3"/>
     </joint>
     <link name="head_link">
       <visual>
         <geometry>
           <mesh scale="0.001 0.001 0.001" filename="package://vega4_description/meshes/head_link.stl" />
         </geometry>
-        <origin xyz="0 0 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
+        <origin xyz="0 0 0" rpy="${M_PI/2} ${-M_PI/2} ${M_PI}"/>
+        <material name="Black">
+          <color rgba="0 0 0 0.9"/>
+        </material>
       </visual>
     </link>
 
     <joint name="head_camera_joint" type="fixed">
       <parent link="head_link"/>
       <child link="camera_link"/>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0.08 0 -0.015" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
     </joint>
     <link name="camera_link">
-      <visual>
-        <geometry>
-          <box size="0.1 0.05 0.05"/>
-        </geometry>
-        <origin xyz="0 0 0" rpy="${M_PI/2} 0 ${M_PI/2}"/>
-      </visual>
     </link>
 
   </xacro:macro>
