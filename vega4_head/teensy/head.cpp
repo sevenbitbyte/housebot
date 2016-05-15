@@ -72,15 +72,15 @@ void faceCb( const sensor_msgs::Image& image){
 
   img_echo.publish(&image_msg);
 
-  for(int x=0; x<31 /*|| x<image.width*/; x++){
-    for(int y=0; y<15 /*|| y<image.height*/; y++){
+  for(int x=0; x<32 /*|| x<image.width*/; x++){
+    for(int y=0; y<16 /*|| y<image.height*/; y++){
 
         int idx = (y * image.step) + (x * 3);
 	//int idx = (x * 3);
         rgb24 pixel = {(uint8_t)image.data[idx], (uint8_t)image.data[idx+1], (uint8_t)image.data[idx+2]};
 	
         //rgb24 pixel = {(uint8_t)image.data[idx], (uint8_t)image.data[idx+1], (uint8_t)image.data[idx+2]};
-        backgroundLayer.drawPixel(x,y, pixel);
+        backgroundLayer.drawPixel(31-x,15-y, pixel);
     }
   }
 
