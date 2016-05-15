@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 
-include_directories(${ROS_LIB_DIR} SmartMatrix/)
+include_directories(${ROS_LIB_DIR})
 
 FILE(GLOB_RECURSE ros_src
     "${ROS_LIB_DIR}/*.cpp"
