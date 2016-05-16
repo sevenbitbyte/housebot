@@ -1,17 +1,12 @@
+#include <math.h>
+#include <SmartMatrix3.h>
+#include <Adafruit_NeoPixel.h>
 #include <ros.h>
 #include <ros/time.h>
 #include <sensor_msgs/Image.h>
 #include <std_msgs/Int8MultiArray.h>
-#include <Adafruit_NeoPixel.h>
 
-#include <math.h>
 
-#include <SmartMatrix3.h>
-//#include "Adafruit_GFX/Adafruit_GFX.h"   // Core graphics library
-//#include "RGB-matrix-Panel-master/RGBmatrixPanel.h" // Hardware-specific library
-
-// Similar to F(), but for PROGMEM string pointers rather than literals
-//#define F2(progmem_ptr) (const __FlashStringHelper *)progmem_ptr
 
 #define VEGA_NUM_LEDS 24
 #define COLOR_DEPTH 24                  // known working: 24, 48 - If the sketch uses type `rgb24` directly, COLOR_DEPTH must be 24
@@ -30,30 +25,19 @@ SMARTMATRIX_ALLOCATE_SCROLLING_LAYER(scrollingLayer, kMatrixWidth, kMatrixHeight
 SMARTMATRIX_ALLOCATE_INDEXED_LAYER(indexedLayer, kMatrixWidth, kMatrixHeight, COLOR_DEPTH, kIndexedLayerOptions);
 const rgb24 defaultBackgroundColor = {0, 0, 0};
 
-#define CLK 11  // MUST be on PORTB! (Use pin 11 on Mega)
-#define LAT A3
-#define OE  9
-#define A   A0
-#define B   A1
-#define C   A2
-
-Adafruit_NeoPixel pixelr = Adafruit_NeoPixel(24, 11, NEO_RGB + NEO_KHZ800);
-Adafruit_NeoPixel pixell = Adafruit_NeoPixel(24, 12, NEO_RGB + NEO_KHZ800);
-//RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, true);
-
-bool isIdle=true;
+Adafruit_NeoPixel leftEarPixels = Adafruit_NeoPixel(24, 11, NEO_RGB + NEO_KHZ800);
+Adafruit_NeoPixel rightEarPixels = Adafruit_NeoPixel(24, 12, NEO_RGB + NEO_KHZ800);
 
 ros::NodeHandle_<ArduinoHardware, 5, 5, 4096, 4096>  nh;
 
-sensor_msgs::Image image_msg;
-ros::Publisher img_echo("/head/echo", &image_msg);
+//sensor_msgs::Image image_msg;
+//ros::Publisher img_echo("/head/echo", &image_msg);
 
 void faceCb( const sensor_msgs::Image& image){
 
   backgroundLayer.fillScreen(defaultBackgroundColor);
-  //backgroundLayer.swapBuffers();
 
-  image_msg.height = image.height;
+  /*image_msg.height = image.height;
   image_msg.width = image.width;
 
   image_msg.data_length = image.data_length;
@@ -62,24 +46,19 @@ void faceCb( const sensor_msgs::Image& image){
   image_msg.data = (uint8_t*)realloc(image_msg.data, image_msg.data_length * sizeof(uint8_t));
 
   memcpy(image_msg.data, image.data, image_msg.data_length);
-  
 
-  //image_msg.data = image.data;
   image_msg.encoding = image.encoding;
   image_msg.is_bigendian = image.is_bigendian;
   image_msg.step = image.step;
 
 
-  img_echo.publish(&image_msg);
+  img_echo.publish(&image_msg);*/
 
-  for(int x=0; x<32 /*|| x<image.width*/; x++){
-    for(int y=0; y<16 /*|| y<image.height*/; y++){
+  for(int x=0; x<32; x++){
+    for(int y=0; y<16; y++){
 
         int idx = (y * image.step) + (x * 3);
-	//int idx = (x * 3);
         rgb24 pixel = {(uint8_t)image.data[idx], (uint8_t)image.data[idx+1], (uint8_t)image.data[idx+2]};
-	
-        //rgb24 pixel = {(uint8_t)image.data[idx], (uint8_t)image.data[idx+1], (uint8_t)image.data[idx+2]};
         backgroundLayer.drawPixel(31-x,15-y, pixel);
     }
   }
@@ -87,19 +66,37 @@ void faceCb( const sensor_msgs::Image& image){
   backgroundLayer.swapBuffers();
 }
 
-void leftEarCb( const std_msgs::Int8MultiArray& pixels){
-  //
-}
 
-void rightEarCb( const std_msgs::Int8MultiArray& pixels){
-  //
-}
+void setStripMultiArray(Adafruit_NeoPixel& strip, const std_msgs::Int8MultiArray& pixels){
+  for(int i=0; i<strip.numPixels() && i<pixels.data_length; i++){
+    int idx = i*3;	//NOTE: We expect RGB data only
 
-void setStrip(Adafruit_NeoPixel* pix, int color) {
+    byte red = pixels.data[idx];
+    byte green = pixels.data[idx + 1];
+    byte blue = pixels.data[idx + 2];
 
-  for (int x = 0; VEGA_NUM_LEDS > x; x++ ) {
-    pix->setPixelColor(x, color, color, color, color);
+    strip.setPixelColor(i, strip.Color( red, green, blue ));
   }
+
+  strip.show();
+}
+
+void leftEarCb(const std_msgs::Int8MultiArray& pixels){
+  setStripMultiArray(leftEarPixels, pixels);
+}
+
+void rightEarCb(const std_msgs::Int8MultiArray& pixels){
+  setStripMultiArray(rightEarPixels, pixels);
+}
+
+
+void setStrip(Adafruit_NeoPixel* strip, int red, int green, int blue, int gamma) {
+
+  for (int x = 0; x < strip->numPixels(); x++ ) {
+    strip->setPixelColor(x, strip->Color(red, green, blue, gamma));
+  }
+
+  strip->show();
 }
 
 ros::Subscriber<sensor_msgs::Image> faceSub("/head/image", &faceCb );
@@ -107,12 +104,18 @@ ros::Subscriber<std_msgs::Int8MultiArray> leftEarSub("/head/left_led_rgb", &left
 ros::Subscriber<std_msgs::Int8MultiArray> rightEarSub("/head/right_led_rgb", &rightEarCb );
 
 void setup() {
-  pixelr.begin();
-  setStrip(&pixelr, 0);
-  pixelr.show();
-  pixell.begin();
-  setStrip(&pixell, 0);
-  pixell.show();
+
+  pinMode(13, OUTPUT);
+  digitalWrite(13, HIGH);
+
+  leftEarPixels.setBrightness(50);
+  leftEarPixels.begin();
+  setStrip(&leftEarPixels, 0, 0 ,0 ,50);
+
+  rightEarPixels.setBrightness(50);
+  rightEarPixels.begin();
+  setStrip(&rightEarPixels, 0, 0, 0, 50);
+
   matrix.addLayer(&backgroundLayer);
   matrix.begin();
 
@@ -121,32 +124,30 @@ void setup() {
   nh.subscribe(faceSub);
   nh.subscribe(leftEarSub);
   nh.subscribe(rightEarSub);
-  nh.advertise(img_echo);
+  //nh.advertise(img_echo);
 }
 
 void loop() {
-             
   nh.spinOnce();
 
-  if(true){
 
-    if(nh.connected()){
-
-	// No op
-
-    }
-    else{
-      //backgroundLayer.swapBuffers();
-
-      backgroundLayer.fillScreen(defaultBackgroundColor);
-
-      float i = (((float)(millis()%3500)) / 3500) * M_PI;
-      uint8_t x = (sin(i) * 256.0) + 0.0;
-      rgb24 pixelColor = {x, x, x};
-      backgroundLayer.drawPixel(31,0, pixelColor);
-      backgroundLayer.swapBuffers();
-    }
+  if(nh.connected()){
 
   }
+  else{
 
+    backgroundLayer.fillScreen(defaultBackgroundColor);
+
+    float i = (((float)(millis()%3500)) / 3500) * M_PI;
+    uint8_t x = (sin(i) * 256.0) + 0.0;
+    rgb24 pixelColor = {x, x, x};
+    backgroundLayer.drawPixel(31,0, pixelColor);
+    backgroundLayer.swapBuffers();
+
+    leftEarPixels.setPixelColor(0, leftEarPixels.Color(x, x, x));
+    rightEarPixels.setPixelColor(0, rightEarPixels.Color(x, x, x));
+
+    leftEarPixels.show();
+    rightEarPixels.show();
+  }
 }
