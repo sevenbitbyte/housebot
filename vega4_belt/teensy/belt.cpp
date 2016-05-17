@@ -110,7 +110,6 @@ void setup() {
   delay(5);
   Serial3.write(0xAA);
   exitSafeStart();
-  setMotorSpeed(0);
 
   // Setup Adafruit Neopixel
   beltPixels.setBrightness(50);
@@ -123,17 +122,7 @@ void setup() {
   nh.advertise(voltagePub);
   nh.advertise(currentPub);
   nh.subscribe(beltSub);
-
-  // Breath while waiting to connect for the first time
-  while(!nh.connected()) {
-    int breath = calculate_breath();
-    beltPixels.setPixelColor(0, 0, breath, 0, 0 );
-    analogWrite(ledPin, breath);
-    beltPixels.show();
-    nh.spinOnce();
-  }
-
-  nh.loginfo("belt controller online");
+  nh.subscribe(pumpSub);
 }
 
 unsigned long last_blink = 0;
