@@ -126,8 +126,8 @@ void setup() {
   nh.subscribe(pumpSub);
 }
 
-unsigned long last_blink = 0;
-unsigned long last_battery_pub = 0;
+unsigned long last_blink_ms = 0;
+unsigned long last_battery_pub_ms = 0;
 bool blink_delta = false;
 unsigned long _millis = 0;
 
@@ -136,8 +136,8 @@ void loop() {
   // Edge case for rolling of the millis register if left on too long
   if(millis() < _millis) {
      _millis = millis();
-     last_blink = 0;
-     last_battery_pub = 0;
+     last_blink_ms = 0;
+     last_battery_pub_ms = 0;
      last_pump_cb_ms = 0;
      return;
   }
@@ -161,18 +161,13 @@ void loop() {
 
   if(nh.connected()) {
 
-    // Blink onboard LED if connected
-    if( _millis - last_blink > 1000 / CONNECTED_LED_BLINK_HZ ) {
-        digitalWrite(ledPin, blink_delta);
-        blink_delta = !(blink_delta);
-        last_blink = _millis;
-    }
+    digitalWrite(ledPin, HIGH);
 
     // Publish battery msgs at rate
-    if( _millis - last_battery_pub > 1000 / BATTERY_PUB_RATE_HZ ) {
+    if( _millis - last_battery_pub_ms > 1000 / BATTERY_PUB_RATE_HZ ) {
       voltagePub.publish(&voltageMsg);
       currentPub.publish(&currentMsg);
-      last_battery_pub = _millis;
+      last_battery_pub_ms = _millis;
     }
 
 
@@ -180,9 +175,15 @@ void loop() {
 
     setMotorSpeed(0); // Turn off pump if n/c
 
+    // Blink onboard LED if not connected
+    if( _millis - last_blink_ms > 1000 / CONNECTED_LED_BLINK_HZ ) {
+        digitalWrite(ledPin, blink_delta);
+        blink_delta = !(blink_delta);
+        last_blink_ms = _millis;
+    }
+
     int breath = calculate_breath();
     beltPixels.setPixelColor(0, 0, breath, 0, 0 );
-    analogWrite(ledPin, breath);
     beltPixels.show();
   }
 
