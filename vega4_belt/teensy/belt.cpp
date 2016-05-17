@@ -53,7 +53,8 @@ void setMotorSpeed(int speed)
 }
 
 int calculate_breath() {
-  return  (int)((exp( sin( millis() / 2000.0 * PI )) - 0.36787) * 108.0);
+  float i = (((float)(millis()%3500)) / 3500) * M_PI;
+  return (sin(i) * 256.0) + 0.0;
 }
 
 void setStripMultiArray(Adafruit_NeoPixel& strip, const std_msgs::Int8MultiArray& pixels){
