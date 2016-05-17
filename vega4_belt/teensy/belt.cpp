@@ -177,6 +177,9 @@ void loop() {
 
 
   } else { // LED breath if n/c
+
+    setMotorSpeed(0); // Turn off pump if n/c
+
     int breath = calculate_breath();
     beltPixels.setPixelColor(0, 0, breath, 0, 0 );
     analogWrite(ledPin, breath);
