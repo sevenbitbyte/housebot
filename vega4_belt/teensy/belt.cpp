@@ -1,12 +1,17 @@
+// Internal libraries
 #include "Arduino.h"
 
+//Externel libraries
 #include <Adafruit_NeoPixel.h>
 
+//ROS libraries
 #include <ros.h>
+#include <std_msgs/Bool.h>
 #include <std_msgs/Int16.h>
 #include <std_msgs/Float32.h>
 #include <std_msgs/Int8MultiArray.h>
 
+//Power
 const int ledPin = 13;
 const int vMonPin = 14;
 const int iMonPin = 15;
@@ -17,15 +22,24 @@ const int powerEAPin = 2;
 #define CONNECTED_LED_BLINK_HZ 10
 #define BATTERY_PUB_RATE_HZ 5
 
+//Pump
 #define PUMP_TIMOUT_MS 5000
 
+//Limit switch
+#define LIMIT_SWITCH_PIN 6
+#define LIMIT_SWITCH_PUB_RATE_HZ 1
+
+//NeoPixel
 Adafruit_NeoPixel beltPixels = Adafruit_NeoPixel(23, 20, NEO_RGBW + NEO_KHZ800);
 
+//ROS
 ros::NodeHandle_<ArduinoHardware, 25, 25, 4096, 4096> nh;
 
+std_msgs::Bool lowerLimitMsg;
 std_msgs::Float32 voltageMsg;
 std_msgs::Float32 currentMsg;
 
+ros::Publisher lowerLimitPub("/gantry/lower_limit", &lowerLimitMsg);
 ros::Publisher voltagePub("voltage", &voltageMsg);
 ros::Publisher currentPub("current", &currentMsg);
 
@@ -106,11 +120,14 @@ void setup() {
   pinMode(powerEAPin, OUTPUT);
   digitalWrite(powerEAPin, LOW);
 
+  pinMode(LIMIT_SWITCH_PIN, OUTPUT);
+
   // Pump setup
   Serial3.begin(19200);
-  delay(5);
+  delay(5);  //Motor Controller requires 5ms startup head time
   Serial3.write(0xAA);
   exitSafeStart();
+  setMotorSpeed(0);
 
   // Setup Adafruit Neopixel
   beltPixels.setBrightness(50);
@@ -122,13 +139,17 @@ void setup() {
   nh.getHardware()->setBaud(115200);
   nh.advertise(voltagePub);
   nh.advertise(currentPub);
+  nh.advertise(lowerLimitPub);
   nh.subscribe(beltSub);
   nh.subscribe(pumpSub);
 }
 
+//Super loop and timout vars, TODO replace with ROS::time
+unsigned long last_endstop_pub_ms = 0;
 unsigned long last_blink_ms = 0;
 unsigned long last_battery_pub_ms = 0;
 bool blink_delta = false;
+bool endstop_delta = false;
 unsigned long _millis = 0;
 
 void loop() {
@@ -136,6 +157,7 @@ void loop() {
   // Edge case for rolling of the millis register if left on too long
   if(millis() < _millis) {
      _millis = millis();
+     last_endstop_pub_ms = 0;
      last_blink_ms = 0;
      last_battery_pub_ms = 0;
      last_pump_cb_ms = 0;
@@ -164,13 +186,21 @@ void loop() {
     digitalWrite(ledPin, HIGH);
 
     // Publish battery msgs at rate
-    if( _millis - last_battery_pub_ms > 1000 / BATTERY_PUB_RATE_HZ ) {
+    if((_millis - last_battery_pub_ms) > (1000 / BATTERY_PUB_RATE_HZ) ) {
       voltagePub.publish(&voltageMsg);
       currentPub.publish(&currentMsg);
       last_battery_pub_ms = _millis;
     }
 
-
+    // Trigger if endstop deltas or if rate triggers
+    bool lowerLimitPinState = digitalRead(LIMIT_SWITCH_PIN);
+    if((endstop_delta != lowerLimitPinState) ||
+      (_millis - last_endstop_pub_ms) > (1000 / LIMIT_SWITCH_PUB_RATE_HZ) ) {
+      lowerLimitMsg.data = lowerLimitPinState;
+      lowerLimitPub.publish(&lowerLimitMsg);
+      endstop_delta = lowerLimitPinState;
+      last_endstop_pub_ms = _millis;
+      }
   } else { // LED breath if n/c
 
     setMotorSpeed(0); // Turn off pump if n/c
