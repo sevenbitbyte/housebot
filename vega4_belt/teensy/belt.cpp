@@ -9,7 +9,7 @@
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int16.h>
 #include <std_msgs/Float32.h>
-#include <std_msgs/Int8MultiArray.h>
+#include <std_msgs/UInt8MultiArray.h>
 
 //Power
 const int ledPin = 13;
@@ -71,7 +71,7 @@ int calculate_breath() {
   return (sin(i) * 256.0) + 0.0;
 }
 
-void setStripMultiArray(Adafruit_NeoPixel& strip, const std_msgs::Int8MultiArray& pixels){
+void setStripMultiArray(Adafruit_NeoPixel& strip, const std_msgs::UInt8MultiArray& pixels){
   for(int i=0; i<strip.numPixels() && i<pixels.data_length; i++){
     int idx = i*4;	//NOTE: We expect RGBW data only
 
@@ -86,7 +86,7 @@ void setStripMultiArray(Adafruit_NeoPixel& strip, const std_msgs::Int8MultiArray
   strip.show();
 }
 
-void beltCb(const std_msgs::Int8MultiArray& pixels){
+void beltCb(const std_msgs::UInt8MultiArray& pixels){
   setStripMultiArray(beltPixels, pixels);
 }
 
@@ -107,7 +107,7 @@ void setStrip(Adafruit_NeoPixel* strip, int red, int green, int blue, int white,
   strip->show();
 }
 
-ros::Subscriber<std_msgs::Int8MultiArray> beltSub("/belt/belt_led_rgbw", &beltCb );
+ros::Subscriber<std_msgs::UInt8MultiArray> beltSub("/belt/belt_led_rgbw", &beltCb );
 ros::Subscriber<std_msgs::Int16> pumpSub("/belt/pump", &pumpCb );
 
 void setup() {

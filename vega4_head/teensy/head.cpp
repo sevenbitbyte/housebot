@@ -4,7 +4,7 @@
 #include <ros.h>
 #include <ros/time.h>
 #include <sensor_msgs/Image.h>
-#include <std_msgs/Int8MultiArray.h>
+#include <std_msgs/UInt8MultiArray.h>
 
 
 
@@ -67,7 +67,7 @@ void faceCb( const sensor_msgs::Image& image){
 }
 
 
-void setStripMultiArray(Adafruit_NeoPixel& strip, const std_msgs::Int8MultiArray& pixels){
+void setStripMultiArray(Adafruit_NeoPixel& strip, const std_msgs::UInt8MultiArray& pixels){
   for(int i=0; i<strip.numPixels() && i<pixels.data_length; i++){
     int idx = i*3;	//NOTE: We expect RGB data only
 
@@ -81,11 +81,11 @@ void setStripMultiArray(Adafruit_NeoPixel& strip, const std_msgs::Int8MultiArray
   strip.show();
 }
 
-void leftEarCb(const std_msgs::Int8MultiArray& pixels){
+void leftEarCb(const std_msgs::UInt8MultiArray& pixels){
   setStripMultiArray(leftEarPixels, pixels);
 }
 
-void rightEarCb(const std_msgs::Int8MultiArray& pixels){
+void rightEarCb(const std_msgs::UInt8MultiArray& pixels){
   setStripMultiArray(rightEarPixels, pixels);
 }
 
@@ -100,8 +100,8 @@ void setStrip(Adafruit_NeoPixel* strip, int red, int green, int blue, int gamma)
 }
 
 ros::Subscriber<sensor_msgs::Image> faceSub("/head/image", &faceCb );
-ros::Subscriber<std_msgs::Int8MultiArray> leftEarSub("/head/left_led_rgb", &leftEarCb );
-ros::Subscriber<std_msgs::Int8MultiArray> rightEarSub("/head/right_led_rgb", &rightEarCb );
+ros::Subscriber<std_msgs::UInt8MultiArray> leftEarSub("/head/left_led_rgb", &leftEarCb );
+ros::Subscriber<std_msgs::UInt8MultiArray> rightEarSub("/head/right_led_rgb", &rightEarCb );
 
 void setup() {
 
