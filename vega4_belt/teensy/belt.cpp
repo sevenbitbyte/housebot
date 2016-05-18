@@ -90,11 +90,11 @@ void beltCb(const std_msgs::Int8MultiArray& pixels){
   setStripMultiArray(beltPixels, pixels);
 }
 
-long last_pump_cb_ms = 0;
+long lastPumpCbMS = 0;
 void pumpCb(const std_msgs::Int16& msg) {
 
   setMotorSpeed(msg.data);
-  last_pump_cb_ms = millis();
+  lastPumpCbMS = millis();
 
 }
 
@@ -145,11 +145,11 @@ void setup() {
 }
 
 //Super loop and timout vars, TODO replace with ROS::time
-unsigned long last_endstop_pub_ms = 0;
-unsigned long last_blink_ms = 0;
-unsigned long last_battery_pub_ms = 0;
-bool blink_delta = false;
-bool endstop_delta = false;
+unsigned long lastEndstopPubMS = 0;
+unsigned long lastBlinkMS = 0;
+unsigned long lastBatteryPubMS = 0;
+bool blinkDelta = false;
+bool endstopDelta = false;
 unsigned long _millis = 0;
 
 void loop() {
@@ -157,10 +157,10 @@ void loop() {
   // Edge case for rolling of the millis register if left on too long
   if(millis() < _millis) {
      _millis = millis();
-     last_endstop_pub_ms = 0;
-     last_blink_ms = 0;
-     last_battery_pub_ms = 0;
-     last_pump_cb_ms = 0;
+     lastEndstopPubMS = 0;
+     lastBlinkMS = 0;
+     lastBatteryPubMS = 0;
+     lastPumpCbMS = 0;
      return;
   }
   _millis = millis();
@@ -177,7 +177,7 @@ void loop() {
   }
 
   // Pump defaults to off after timeout
-  if( _millis - last_pump_cb_ms > PUMP_TIMOUT_MS ) {
+  if( _millis - lastPumpCbMS > PUMP_TIMOUT_MS ) {
     setMotorSpeed(0);
   }
 
@@ -186,30 +186,30 @@ void loop() {
     digitalWrite(ledPin, HIGH);
 
     // Publish battery msgs at rate
-    if((_millis - last_battery_pub_ms) > (1000 / BATTERY_PUB_RATE_HZ) ) {
+    if((_millis - lastBatteryPubMS) > (1000 / BATTERY_PUB_RATE_HZ) ) {
       voltagePub.publish(&voltageMsg);
       currentPub.publish(&currentMsg);
-      last_battery_pub_ms = _millis;
+      lastBatteryPubMS = _millis;
     }
 
-    // Trigger if endstop deltas or if rate triggers
+    // Publish endstop if delta or if rate triggers
     bool lowerLimitPinState = digitalRead(LIMIT_SWITCH_PIN);
-    if((endstop_delta != lowerLimitPinState) ||
-      (_millis - last_endstop_pub_ms) > (1000 / LIMIT_SWITCH_PUB_RATE_HZ) ) {
+    if((endstopDelta != lowerLimitPinState) ||
+      (_millis - lastEndstopPubMS) > (1000 / LIMIT_SWITCH_PUB_RATE_HZ) ) {
       lowerLimitMsg.data = lowerLimitPinState;
       lowerLimitPub.publish(&lowerLimitMsg);
-      endstop_delta = lowerLimitPinState;
-      last_endstop_pub_ms = _millis;
+      endstopDelta = lowerLimitPinState;
+      lastEndstopPubMS = _millis;
       }
   } else { // LED breath if n/c
 
     setMotorSpeed(0); // Turn off pump if n/c
 
     // Blink onboard LED if not connected
-    if( _millis - last_blink_ms > 1000 / CONNECTED_LED_BLINK_HZ ) {
-        digitalWrite(ledPin, blink_delta);
-        blink_delta = !(blink_delta);
-        last_blink_ms = _millis;
+    if( _millis - lastBlinkMS > 1000 / CONNECTED_LED_BLINK_HZ ) {
+        digitalWrite(ledPin, blinkDelta);
+        blinkDelta = !(blinkDelta);
+        lastBlinkMS = _millis;
     }
 
     int breath = calculate_breath();
