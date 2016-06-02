@@ -19,9 +19,9 @@ vega4_scara_shoulder_controller:
     joint_speed: 0.5
     motor:
         id: 2
-        init: 513
-        min: 265
-        max: 730
+        init: 500
+        min: 163
+        max: 869
 vega4_scara_elbow_controller:
     controller:
         package: dynamixel_controllers
@@ -30,10 +30,22 @@ vega4_scara_elbow_controller:
     joint_name: scara_elbow_joint
     joint_speed: 0.5
     motor:
+        id: 4
+        init: 2015
+        min: 188
+        max: 3841
+vega4_scara_gripper_controller:
+    controller:
+        package: dynamixel_controllers
+        module: joint_position_controller
+        type: JointPositionController
+    joint_name: scara_gripper_joint
+    joint_speed: 0.5
+    motor:
         id: 3
-        init: 513
-        min: 230
-        max: 800
+        init: 550
+        min: 550
+        max: 880
 vega4_gantry_controller:
     controller:
         package: dynamixel_controllers
